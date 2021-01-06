@@ -17,7 +17,7 @@ from PyInstaller.archive.pyz_crypto import PyiBlockCipher
 
 a = Analysis(
     ["./desktopifyBrowser.py"],
-    hookspath=["./"],  # To find "hook-cefpython3.py"
+    hookspath=["./src"],  # To find "hook-cefpython3.py"
     cipher=None,
     win_private_assemblies=True,
     win_no_prefer_redirects=True,

@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['desktopify.py'],
-             pathex=['C:\\Users\\parad\\Documents\\Projects\\Desktopify\\src'],
+a = Analysis(['C:\\Users\\parad\\Documents\\Projects\\Desktopify\\src\\desktopify.py'],
+             pathex=['C:\\Users\\parad\\Documents\\Projects\\Desktopify'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -15,27 +15,24 @@ a = Analysis(['desktopify.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
-             
-a.datas += [('icon.ico','icon.ico','DATA')]
+
+a.datas += [('icon.ico','src/icon.ico','DATA')]
 
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
 exe = EXE(pyz,
           a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
           [],
-          exclude_binaries=True,
           name='Desktopify',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
+          upx_exclude=[],
+          runtime_tmpdir=None,
           console=False,
-          icon='icon.ico')
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               upx_exclude=[],
-               name='Desktopify')
+          icon='icon.ico' )
