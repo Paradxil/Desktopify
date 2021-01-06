@@ -13,6 +13,7 @@ import requests
 import winshell
 import wx
 from win32com.shell import shell, shellcon
+import zipfile
 
 from PIL import Image
 
@@ -33,6 +34,15 @@ def getDir():
     else:
         dirname = os.path.dirname(os.path.abspath(__file__))
     return dirname
+
+def getExePath():
+    return os.path.join(getExeDir(), 'DesktopifyBrowser.exe')
+
+def getAPPDATADir():
+    return os.path.join(os.getenv('LOCALAPPDATA'), 'Desktopify')
+
+def getExeDir():
+    return os.path.join(os.getenv('LOCALAPPDATA'), 'Desktopify', 'DesktopifyBrowser')
 
 def getAppsDir():
     return os.path.join(os.getenv('LOCALAPPDATA'), 'Desktopify', 'apps')
@@ -166,7 +176,8 @@ class CreateAppPanel(wx.Panel):
             configFile = self.createConfigFile(url, name, iconFile, appDir)
             self.onUpdate(66)
 
-            exeFile = os.path.join(getDir(), "dist/DesktopifyBrowser/DesktopifyBrowser.exe")
+            exeFile = getExePath()
+            
             self.createShortcuts(iconFile, exeFile, configFile, name=name, desktop=self.createDesktopShortcut.GetValue(), start=self.createStartShortcut.GetValue())
             self.onUpdate(100)
             self.onFinished()
@@ -476,7 +487,8 @@ class AppManager(wx.Panel):
             return
 
         name = self.apps[self.currentItem].name
-        exeFile = os.path.join(getDir(), "dist/DesktopifyBrowser/DesktopifyBrowser.exe")
+        exeFile = getExePath()
+
         configFile = os.path.join(getAppsDir(), name, "config.ini")
         sub = Popen([exeFile, configFile])
 
@@ -487,7 +499,17 @@ class App():
         self.url = url
         self.icon = icon
 
+def checkBrowserExe():
+    if not os.path.exists(getExePath()):
+        exeZipFile = os.path.join(getDir(), 'DesktopifyBrowser.zip')
+        if not os.path.exists(exeZipFile):
+            exeZipFile = './DesktopifyBrowser.zip'
+        if os.path.exists(exeZipFile):
+            with zipfile.ZipFile(exeZipFile, 'r') as zip_ref:
+                zip_ref.extractall(getAPPDATADir())
+
 if __name__ == '__main__':
+    checkBrowserExe()
     app = wx.App()
     frame = SSBCreator()
     app.MainLoop()
