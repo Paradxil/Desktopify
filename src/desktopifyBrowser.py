@@ -33,7 +33,7 @@ def main():
 
     #Setup the cache
     dirname = getDir()
-    filename = os.path.join(dirname, "../", "cache")
+    filename = os.path.join(os.getenv('LOCALAPPDATA'), 'Desktopify', 'cache')
     settings = {"cache_path": filename}
 
     #Enable high dpi support
@@ -88,7 +88,7 @@ class MainFrame(wx.Frame):
             configFile = os.path.join(getDir(), sys.argv[1])
             config.read(configFile)
 
-        ssb_url = config.get("settings", "url", fallback="https://google.com")
+        ssb_url = config.get("settings", "url", fallback="https://qwant.com")
         title = config.get("settings", "name", fallback="SSB Title")
         icon = config.get("settings", "icon", fallback=None)
 
