@@ -50,6 +50,10 @@ def getAppsDir():
 def getAppsPath():
     return getAppsDir()
 
+def getAppDir(appName):
+    appName = appName.strip().replace(' ', '_')
+    return os.path.join(getAppsDir(), appName)
+
 class SSBCreator(wx.Frame):
     def __init__(self):
         super().__init__(parent=None, title='Desktopify', size=(800,600))
@@ -159,7 +163,7 @@ class CreateAppPanel(wx.Panel):
     
     def desktopifyWebsite(self, url, name, installDir):
         try:
-            appDir = os.path.join(installDir, name)
+            appDir = getAppDir(name)
             if os.path.exists(appDir) and os.path.exists(os.path.join(appDir, 'config.ini')):
                 self.addMessage("Error creating app. App already exists.")
                 self.onFinished(False)
@@ -181,9 +185,10 @@ class CreateAppPanel(wx.Panel):
             self.createShortcuts(iconFile, exeFile, configFile, name=name, desktop=self.createDesktopShortcut.GetValue(), start=self.createStartShortcut.GetValue())
             self.onUpdate(100)
             self.onFinished()
-        except:
+        except Exception as e:
             self.progressBar.SetValue(0)
             self.addMessage("Error creating app. Make sure you are connected to the internet and the URL is valid.")
+            print(str(e))
 
     def onUpdate(self, percent):
         self.progressBar.SetValue(percent)
@@ -294,7 +299,7 @@ class CreateAppPanel(wx.Panel):
     def sanitizeText(self, text):
         result = ""
 
-        text = text.strip()
+        text = text.lstrip()
 
         for c in text:
             if c.isalpha() or c==' ':
@@ -340,11 +345,15 @@ class AppManager(wx.Panel):
         wx.Panel.__init__(self, parent)
         my_sizer = wx.BoxSizer(wx.VERTICAL)
 
+        #Set styles
+        self.SetBackgroundColour((44, 137, 160))
+
         #Add title
-        titleFont = wx.Font(25, wx.DEFAULT, wx.NORMAL, wx.DEFAULT)
+        titleFont = wx.Font(35, wx.DEFAULT, wx.NORMAL, wx.DEFAULT)
 
         self.title = wx.StaticText(self, label=text["title"], style=wx.ALIGN_LEFT)
         self.title.SetFont(titleFont)
+        self.title.SetForegroundColour((255,255,255))
         my_sizer.Add(self.title, 0, wx.TOP | wx.LEFT | wx.EXPAND, 8)
 
         #Add create button
@@ -464,7 +473,7 @@ class AppManager(wx.Panel):
         startmenuShortcut = os.path.join(winshell.start_menu(), name + '.lnk')
 
         #Get the app dir
-        appDir = os.path.join(getAppsDir(), name)
+        appDir = getAppDir(name)
 
         if os.path.exists(desktopShortcut):
             os.remove(desktopShortcut)
@@ -489,7 +498,7 @@ class AppManager(wx.Panel):
         name = self.apps[self.currentItem].name
         exeFile = getExePath()
 
-        configFile = os.path.join(getAppsDir(), name, "config.ini")
+        configFile = os.path.join(getAppDir(name), "config.ini")
         sub = Popen([exeFile, configFile])
 
 #Used to store app info
